@@ -15,7 +15,7 @@ from sklearn.preprocessing import StandardScaler
 from utils.performance_analysis import bootstrap_metrics, plot_confusion_matrix, call_precision_recall_curve
 
 
-def load_data(data_dir="data/"):
+def load_data(data_dir=""):
     """Loads pre-saved training and test data from pickle files."""
     with open(os.path.join(data_dir, "X_train_val.pkl"), "rb") as f:
         X_train_val = pickle.load(f)
