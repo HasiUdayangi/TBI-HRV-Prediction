@@ -26,7 +26,7 @@ class hrvcalculation:
     HRV Library
     """
 def calctimedomainhrv(RRI, t_unit='ms', decim: int = 2):
-rri = RRI[~np.isnan(RRI)]
+        rri = RRI[~np.isnan(RRI)]
         if t_unit == 's':
             rri *= 1e3
             
@@ -67,7 +67,7 @@ rri = RRI[~np.isnan(RRI)]
         return pd.DataFrame([[SDNN, SDANN, MeanRR, RMSSD, pNN50]], columns=td_cols)
 
 def calcfreqdomainhrv(RRI, t_unit='ms', meth=1, decim=3, M=5, O=50, BTval=10, omega_max=500, order=100):
-rri = RRI[~np.isnan(RRI)].astype(float)
+        rri = RRI[~np.isnan(RRI)].astype(float)
         
         if t_unit == 'ms':
             rri = rri.astype(float) / 1e3
@@ -164,14 +164,6 @@ rri = RRI[~np.isnan(RRI)].astype(float)
                               sd1, sd2, alpha1, alpha2]], columns=nl_cols)
 
 def RQA(RRI, m=10, L=1, decim=2):
-        """
-
-        :param RRI:
-        :param m:
-        :param L:
-        :param decim:
-        :return:
-        """
 
         length_RRI = len(RRI)
         N = length_RRI - (m - 1) * L
@@ -249,11 +241,6 @@ def RQA(RRI, m=10, L=1, decim=2):
         return REC, DET, LAM, Lmean, int(Lmax), Vmean, int(Vmax)
 
 def Poincare(RRI, decim=3):
-        """
-        :param RRI: RR interval series
-        :param decim:
-        :return:
-        """
         lenx = np.size(RRI)
         RRI = np.reshape(RRI, [lenx, ])
         x = RRI[0:lenx - 1]
@@ -274,16 +261,6 @@ def Poincare(RRI, decim=3):
 
 
 def DFA(RRI, min_box=4, max_box=64, inc=1, cop=12, decim=3):
-        """
-
-        :param RRI:
-        :param min_box: minimum point
-        :param max_box: max point
-        :param inc: increment/step size
-        :param cop: cross-over point for SD1 and SD2 or up and lower division
-        :param decim:
-        :return:
-        """
 
         NN = np.size(RRI)
         RRI = np.reshape(RRI, [NN, ])
