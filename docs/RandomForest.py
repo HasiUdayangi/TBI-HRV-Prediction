@@ -34,9 +34,9 @@ def preprocess_data(X_train_val, X_test):
     X_train_flattened = X_train_val.reshape(X_train_val.shape[0], -1)
     X_test_flattened = X_test.reshape(X_test.shape[0], -1)
 
-    return X_train_scaled, X_test_scaled
+    return X_train_flattened, X_test_flattened
 
-def tune_hyperparameters(X_train_scaled, y_train_val):
+def tune_hyperparameters(X_train_flattened, y_train_val):
     """Performs hyperparameter tuning using GridSearchCV for Random Forest."""
     param_grid = {
         'n_estimators': [100, 200, 300],
@@ -49,7 +49,7 @@ def tune_hyperparameters(X_train_scaled, y_train_val):
 
     rf = RandomForestClassifier(random_state=42)
     grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=3, n_jobs=-1, verbose=2, scoring='roc_auc')
-    grid_search.fit(X_train_scaled, y_train_val)
+    grid_search.fit(X_train_flattened, y_train_val)
 
     best_params = grid_search.best_params_
     print("Best Random Forest parameters:", best_params)
@@ -57,15 +57,15 @@ def tune_hyperparameters(X_train_scaled, y_train_val):
     return best_params
 
 
-def train_random_forest(X_train_scaled, y_train_val, best_params, n_splits=5):
+def train_random_forest(X_train_flattened, y_train_val, best_params, n_splits=5):
     """Trains Random Forest using Stratified K-Fold cross-validation."""
     kf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
 
     auc_scores = []
     models = []
 
-    for train_idx, val_idx in kf.split(X_train_scaled, y_train_val):
-        X_train, X_val = X_train_scaled[train_idx], X_train_scaled[val_idx]
+    for train_idx, val_idx in kf.split(X_train_flattened, y_train_val):
+        X_train, X_val = X_train_flattened[train_idx], X_train_flattened[val_idx]
         y_train, y_val = y_train_val[train_idx], y_train_val[val_idx]
 
         # Apply SMOTE for handling class imbalance
@@ -94,9 +94,9 @@ def train_random_forest(X_train_scaled, y_train_val, best_params, n_splits=5):
 
 
 
-def evaluate_model(model, X_test_scaled, y_test):
+def evaluate_model(model, X_test_flattened, y_test):
     """Evaluates the trained model on the test dataset."""
-    y_pred_prob_test = model.predict_proba(X_test_scaled)[:, 1]
+    y_pred_prob_test = model.predict_proba(X_test_flattened)[:, 1]
     y_pred_test = (y_pred_prob_test > 0.5).astype(int)
 
     auc_score = roc_auc_score(y_test, y_pred_prob_test)
@@ -135,18 +135,18 @@ def main():
     X_train_val, X_test, y_train_val, y_test = load_data()
 
     print("\n🔹 Preprocessing Data...")
-    X_train_scaled, X_test_scaled = preprocess_data(X_train_val, X_test)
+    X_train_flattened, X_test_flattened = preprocess_data(X_train_val, X_test)
 
     print("\n🔹 Hyperparameter Tuning...")
-    best_params = tune_hyperparameters(X_train_scaled, y_train_val)
+    best_params = tune_hyperparameters(X_train_flattened, y_train_val)
 
     print("\n🔹 Training Random Forest with Cross-Validation...")
-    best_model, avg_auc = train_random_forest(X_train_scaled, y_train_val, best_params)
+    best_model, avg_auc = train_random_forest(X_train_flattened, y_train_val, best_params)
 
     print(f"\n✅ Best Cross-Validation AUC: {avg_auc:.4f}")
 
     print("\n🔹 Evaluating Model on Test Data...")
-    evaluate_model(best_model, X_test_scaled, y_test)
+    evaluate_model(best_model, X_test_flattened, y_test)
 
     print("\n✅ Random Forest Model Training & Evaluation Complete!")
 
