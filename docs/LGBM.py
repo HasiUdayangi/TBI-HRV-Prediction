@@ -31,31 +31,6 @@ def lgb_eval_function(num_leaves, feature_fraction, bagging_fraction, X_train, y
     pred = model.predict_proba(X_test)[:, 1]
     return roc_auc_score(y_test, pred)
 
-# Function to plot the confusion matrix
-def plot_confusion_matrix(cm, classes, title='Confusion Matrix', cmap=plt.cm.Blues):
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.title(title)
-    plt.colorbar()
-    tick_marks = range(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45)
-    plt.yticks(tick_marks, classes)
-    
-    thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, cm[i, j], horizontalalignment="center", color="white" if cm[i, j] > thresh else "black")
-    
-    plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    plt.show()
-
-# Function to compute bootstrap confidence intervals
-def bootstrap_metrics(y_true, y_pred, n_bootstrap=1000):
-    metrics = {}
-    for metric_name, metric_func in [('AUC', roc_auc_score), ('Accuracy', accuracy_score)]:
-        scores = [metric_func(y_true, np.random.choice(y_pred, size=len(y_pred), replace=True)) for _ in range(n_bootstrap)]
-        metrics[metric_name] = {'Mean': np.mean(scores), '95% CI': (np.percentile(scores, 2.5), np.percentile(scores, 97.5))}
-    return metrics
 
 # Load dataset
 # Assuming preprocessed X_train_val_resampled, y_train_val_resampled, X_test_reshaped, y_test
