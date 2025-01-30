@@ -4,7 +4,7 @@ from tensorflow.keras.models import load_model
 from utils import resample_ecg, MHTD, zero_mean_normalise
 
 def get_R_peak_windowed(ECG, fs, L=1):
-qrs_inds = MHTD(ECG, fs).astype(int)
+    qrs_inds = MHTD(ECG, fs).astype(int)
 
     W = fs * L  # Window length
     qrs_inds = qrs_inds[qrs_inds > int(W / 2)]
@@ -31,7 +31,7 @@ qrs_inds = MHTD(ECG, fs).astype(int)
     return sig_df, sig_norm_df, qrs_inds, N
 
 def detect_and_filter_ectopic_beats(df, model_ectopic_detection, fs=128):
-"""
+    """
     Detects ectopic beats in ECG and removes their associated RR intervals.
 
     Parameters:
@@ -55,8 +55,8 @@ def detect_and_filter_ectopic_beats(df, model_ectopic_detection, fs=128):
 
     # Prepare ECG segments for model prediction
     X_test = np.expand_dims(sig_norm_df.iloc[:, :127], axis=2)
-pred_label = model_ectopic_detection.predict(X_test)
-labels = np.argmax(pred_label, axis=-1)
+    pred_label = model_ectopic_detection.predict(X_test)
+    labels = np.argmax(pred_label, axis=-1)
 
     # Remove RR intervals associated with ectopic beats
     rr_intervals = np.diff(qrs_inds)  # Compute RR intervals
