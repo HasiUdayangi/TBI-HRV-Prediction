@@ -8,18 +8,13 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from imblearn.over_sampling import SMOTE
 
-# AWS S3 Configuration (Ensure your AWS credentials are configured)
+
 s3_client = boto3.client('s3')
-bucket_name = "your-s3-bucket-name"
-hrv_folder = "hrv-data-folder"  # Path to HRV CSV files in the S3 bucket
+bucket_name = ""
+hrv_folder = "hrv-data-folder" 
 
 def fetch_and_merge_hrv_data():
-    """
-    Fetch all HRV calculation CSV files from S3 and merge them into a single DataFrame.
-    
-    Returns:
-    - combined_data (DataFrame): Merged HRV dataset
-    """
+
     csv_files = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=hrv_folder)['Contents']
     
     dataframes = []
@@ -50,7 +45,7 @@ def create_sequences_labels(combined_data):
     labels = []
     
     for pid, group in combined_data.groupby('patient_id'):
-        patient_sequences = group.drop(columns=['SDANN (ms)', 'patient_id', 'patientid', 'motality', 'mortality']).values
+        patient_sequences = group.drop(columns=['patient_id','motality', 'mortality']).values
         sequences.append(patient_sequences)
         labels.append(group['mortality'].iloc[0])  # Assign same label to all segments of a patient
 
