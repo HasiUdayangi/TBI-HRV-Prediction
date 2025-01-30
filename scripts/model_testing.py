@@ -8,9 +8,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-# ==============================
-# 🚀 Load Model and Test Data
-# ==============================
 def load_model_and_data(model_path, test_data_path):
     """
     Load trained model and test data.
@@ -33,10 +30,6 @@ def load_model_and_data(model_path, test_data_path):
     X_test_padded = tf.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=288, dtype='float32', padding='post', truncating='post')
     return model, X_test_padded, y_test
 
-
-# ==============================
-# 🔥 Generate Predictions
-# ==============================
 def get_predictions(model, X_test):
     """
     Generate model predictions.
@@ -53,10 +46,6 @@ def get_predictions(model, X_test):
     y_pred = (y_prob > 0.5).astype(int)
     return y_prob, y_pred
 
-
-# ==============================
-# 📊 Plot Confusion Matrix
-# ==============================
 def plot_confusion_matrix(y_true, y_pred, classes, save_path=None):
     """
     Plot confusion matrix.
@@ -77,10 +66,6 @@ def plot_confusion_matrix(y_true, y_pred, classes, save_path=None):
     if save_path:
         plt.savefig(save_path)
 
-
-# ==============================
-# 📊 Compute Performance Metrics
-# ==============================
 def compute_metrics(y_true, y_pred):
     """
     Compute model evaluation metrics.
@@ -103,9 +88,6 @@ def compute_metrics(y_true, y_pred):
     return df_metrics
 
 
-# ==============================
-# 📌 Bootstrap Confidence Intervals
-# ==============================
 def bootstrap_metrics(y_true, y_pred_prob, num_samples=1000):
     """
     Compute bootstrap confidence intervals for AUC, Precision, Recall, and F1-score.
@@ -146,9 +128,6 @@ def bootstrap_metrics(y_true, y_pred_prob, num_samples=1000):
     return results
 
 
-# ==============================
-# 📈 Precision-Recall Curve
-# ==============================
 def plot_precision_recall_curve(y_true, y_pred_prob, save_path=None):
     """
     Plot Precision-Recall Curve.
@@ -170,10 +149,6 @@ def plot_precision_recall_curve(y_true, y_pred_prob, save_path=None):
     if save_path:
         plt.savefig(save_path)
 
-
-# ==============================
-# 🔥 Save Metrics
-# ==============================
 def save_results(df_metrics, bootstrap_results, output_folder):
     """
     Save computed metrics.
@@ -186,11 +161,7 @@ def save_results(df_metrics, bootstrap_results, output_folder):
     df_metrics.to_csv(f"{output_folder}/model_test_metrics.csv", index=False)
     with open(f"{output_folder}/bootstrap_metrics.pkl", "wb") as f:
         pickle.dump(bootstrap_results, f)
-
-
-# ==============================
-# 🚀 MAIN FUNCTION
-# ==============================
+        
 def main():
     """
     Run model testing pipeline.
