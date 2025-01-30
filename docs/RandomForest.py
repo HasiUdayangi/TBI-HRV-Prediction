@@ -30,7 +30,6 @@ def load_data(data_dir="data/"):
 
 
 def preprocess_data(X_train_val, X_test):
-    """Flattens and normalizes input data for Random Forest."""
     X_train_flattened = X_train_val.reshape(X_train_val.shape[0], -1)
     X_test_flattened = X_test.reshape(X_test.shape[0], -1)
 
