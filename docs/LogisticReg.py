@@ -34,17 +34,9 @@ def preprocess_data(X_train_val, X_test):
     X_train_flattened = X_train_val.reshape(X_train_val.shape[0], -1)
     X_test_flattened = X_test.reshape(X_test.shape[0], -1)
 
-    # Normalize the dataset
-    scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train_flattened)
-    X_test_scaled = scaler.transform(X_test_flattened)
+    return X_train_flattened, X_test_flattened
 
-    # Save the scaler for future use
-    joblib.dump(scaler, "models/scaler.pkl")
-
-    return X_train_scaled, X_test_scaled
-
-def train_logistic_regression(X_train_scaled, y_train_val, n_splits=5):
+def train_logistic_regression(X_train_flattened, y_train_val, n_splits=5):
     """Trains a logistic regression model using stratified K-Fold cross-validation."""
     kf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
     class_weights = compute_class_weight('balanced', classes=np.unique(y_train_val), y=y_train_val)
@@ -82,7 +74,7 @@ def train_logistic_regression(X_train_scaled, y_train_val, n_splits=5):
     return best_model, np.mean(auc_scores)
 
 
-def evaluate_model(model, X_test_scaled, y_test):
+def evaluate_model(model, X_test_flattened, y_test):
     """Evaluates the trained model on the test dataset."""
     y_pred_prob_test = model.predict_proba(X_test_scaled)[:, 1]
     y_pred_test = (y_pred_prob_test > 0.5).astype(int)
@@ -123,15 +115,15 @@ def main():
     X_train_val, X_test, y_train_val, y_test = load_data()
 
     print("\n🔹 Preprocessing Data...")
-    X_train_scaled, X_test_scaled = preprocess_data(X_train_val, X_test)
+    X_train_flattened, X_test_flattened = preprocess_data(X_train_val, X_test)
 
     print("\n🔹 Training Logistic Regression with Cross-Validation...")
-    best_model, avg_auc = train_logistic_regression(X_train_scaled, y_train_val)
+    best_model, avg_auc = train_logistic_regression(X_train_flattened, y_train_val)
 
     print(f"\n✅ Best Cross-Validation AUC: {avg_auc:.4f}")
 
     print("\n🔹 Evaluating Model on Test Data...")
-    evaluate_model(best_model, X_test_scaled, y_test)
+    evaluate_model(best_model, X_test_flattened, y_test)
 
 
 if __name__ == "__main__":
