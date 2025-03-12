@@ -127,7 +127,7 @@ def split_and_apply_smote_by_source(sequences, labels, sources, output_dir="data
     # Save combined sets (optional)
     with open(os.path.join(output_dir, "X_train_val_resampled.pkl"), "wb") as f:
         pickle.dump(X_train_combined, f)
-    with open(os.path.join(output_dir, "y_train_val_resampledd.pkl"), "wb") as f:
+    with open(os.path.join(output_dir, "y_train_val_resampled.pkl"), "wb") as f:
         pickle.dump(y_train_combined, f)
     with open(os.path.join(output_dir, "X_test.pkl"), "wb") as f:
         pickle.dump(X_test_combined, f)
@@ -135,7 +135,7 @@ def split_and_apply_smote_by_source(sequences, labels, sources, output_dir="data
         pickle.dump(y_test_combined, f)
     
     print("✅ Combined training and testing sets created and saved.")
-    return X_train_val_resampledd, y_train_val_resampledd, X_test, y_test
+    return X_train_val_resampledd, y_train_val_resampled, X_test, y_test
 
 # --------------------------
 # 🚀 Execution Pipeline
