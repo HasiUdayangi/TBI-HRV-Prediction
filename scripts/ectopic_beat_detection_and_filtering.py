@@ -3,6 +3,12 @@ import pandas as pd
 from tensorflow.keras.models import load_model
 from utils import resample_ecg, MHTD, zero_mean_normalise
 
+def resample_ecg(ECG, ogFS):
+    fs = 240
+    N = int((len(ECG) / ogFS) * fs)
+    SIGNAL.resample(ECG, N)
+    return ECG
+
 def get_R_peak_windowed(ECG, fs, L=1):
     qrs_inds = MHTD(ECG, fs).astype(int)
 
