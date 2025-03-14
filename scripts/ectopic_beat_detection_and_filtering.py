@@ -44,7 +44,7 @@ def detect_and_filter_ectopic_beats(df, model_ectopic_detection, fs=128):
     - ectopic_labels: list, List of ectopic beats detected (1 = ectopic, 0 = normal)
     """
     # Load the trained ectopic beat detection model
-    model = load_model(model_path)
+    #model = load_model(model_path)
 
     # Resample ECG to 128 Hz
     resampled_ecg = resample_ecg(df, ogFS=fs)
