@@ -137,6 +137,80 @@ def split_and_apply_smote_by_source(sequences, labels, sources, output_dir="data
     print("✅ Combined training and testing sets created and saved.")
     return X_train_val_resampled, y_train_val_resampled, X_test, y_test
 
+
+import numpy as np
+import pickle
+from sklearn.model_selection import train_test_split
+from keras.preprocessing.sequence import pad_sequences
+from imblearn.over_sampling import SMOTE
+import os
+
+def split_and_apply_new_smote_by_source(sequences, labels, sources, output_dir="data/processed"):
+
+    
+    X_train_all = []
+    y_train_all = []
+    X_test_all = []
+    y_test_all = []
+    
+    unique_sources = np.unique(sources)
+    max_timesteps = 288  # e.g., 24 hours of 5-minute segments
+    for src in unique_sources:
+        # Get indices for the current source
+        idx = [i for i, s in enumerate(sources) if s == src]
+        src_sequences = [sequences[i] for i in idx]
+        src_labels = labels[idx]
+        
+        # Split into 80% train, 20% test for this source
+        X_train, X_test, y_train, y_test = train_test_split(
+            src_sequences, src_labels, test_size=0.2, random_state=42, stratify=src_labels)
+        print(f"{src}: {len(X_train)} training patients, {len(X_test)} testing patients.")
+ 
+        X_train_padded = pad_sequences(X_train, maxlen=max_timesteps, dtype='float32', 
+                                       padding='post', truncating='post')
+        X_test_padded = pad_sequences(X_test, maxlen=max_timesteps, dtype='float32', 
+                                      padding='post', truncating='post')
+        
+  
+        num_samples, num_timesteps, num_features = X_train_padded.shape
+        X_train_flat = X_train_padded.reshape(num_samples, -1)  # Flatten for SMOTE
+        
+        # Apply SMOTE separately on this source's training data
+        smote = SMOTE(random_state=42)
+        X_train_resampled, y_train_resampled = smote.fit_resample(X_train_flat, y_train)
+        
+        # Reshape back to 3D: (num_patients, timesteps, feature_dim)
+        feature_dim = X_train_resampled.shape[1] // max_timesteps
+        X_train_resampled_3d = X_train_resampled.reshape(-1, max_timesteps, feature_dim)
+        
+        # Append the results to the overall lists
+        X_train_all.append(X_train_resampled_3d)
+        y_train_all.append(y_train_resampled)
+        X_test_all.append(X_test_padded)  # Testing sets are padded but not resampled
+        y_test_all.append(y_test)
+    
+    # Combine training sets from all sources
+    X_train_val_resampled = np.concatenate(X_train_all, axis=0)
+    y_train_val_resampled = np.concatenate(y_train_all, axis=0)
+    # Combine testing sets from all sources
+    X_test_combined = np.concatenate(X_test_all, axis=0)
+    y_test_combined = np.concatenate(y_test_all, axis=0)
+    
+    # Save combined sets (optional)
+    os.makedirs(output_dir, exist_ok=True)
+    with open(os.path.join(output_dir, "X_train_val_resampled.pkl"), "wb") as f:
+        pickle.dump(X_train_val_resampled, f)
+    with open(os.path.join(output_dir, "y_train_val_resampled.pkl"), "wb") as f:
+        pickle.dump(y_train_val_resampled, f)
+    with open(os.path.join(output_dir, "X_test_combined.pkl"), "wb") as f:
+        pickle.dump(X_test_combined, f)
+    with open(os.path.join(output_dir, "y_test_combined.pkl"), "wb") as f:
+        pickle.dump(y_test_combined, f)
+    
+    print("✅ Combined training and testing sets created and saved.")
+    return X_train_val_resampled, y_train_val_resampled, X_test_combined, y_test_combined
+
+
 # --------------------------
 # 🚀 Execution Pipeline
 # --------------------------
@@ -147,5 +221,5 @@ if __name__ == "__main__":
     # 2. Create sequences and labels
     sequences, labels, sources = create_sequences_labels(combined_data)
 
-    split_and_apply_smote_by_source(sequences, labels, sources)
+    split_and_apply_new_smote_by_source(sequences, labels, sources)
 
