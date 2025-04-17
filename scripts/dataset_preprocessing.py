@@ -212,7 +212,7 @@ def split_and_apply_new_smote_by_source(sequences, labels, sources, output_dir="
 
 
 # --------------------------
-# 🚀 Execution Pipeline
+#Execution Pipeline
 # --------------------------
 if __name__ == "__main__":
     # 1. Fetch and merge HRV data
