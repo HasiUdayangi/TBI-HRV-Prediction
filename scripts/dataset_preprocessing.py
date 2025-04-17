@@ -41,7 +41,7 @@ def fetch_and_merge_hrv_data():
     all_dfs = dfs_gcuh + dfs_incart
     if all_dfs:
         combined_data = pd.concat(all_dfs, ignore_index=True)
-        print(f"✅ Merged {len(all_dfs)} HRV CSV files into one DataFrame.")
+        print(f" Merged {len(all_dfs)} HRV CSV files into one DataFrame.")
     else:
         combined_data = pd.DataFrame()
         print("No HRV data files found.")
@@ -60,7 +60,7 @@ def create_sequences_labels(combined_data):
         sequences.append(patient_sequences)
         labels.append(group[mortality_col].iloc[0])
         sources.append(group['source'].iloc[0])
-    print(f"✅ Created sequences for {len(sequences)} patients.")
+    print(f" Created sequences for {len(sequences)} patients.")
     return sequences, np.array(labels), sources
 
 def split_and_apply_smote_by_source(sequences, labels, sources, output_dir="data/processed"):
@@ -134,7 +134,7 @@ def split_and_apply_smote_by_source(sequences, labels, sources, output_dir="data
     with open(os.path.join(output_dir, "y_test.pkl"), "wb") as f:
         pickle.dump(y_test_combined, f)
     
-    print("✅ Combined training and testing sets created and saved.")
+    print(" Combined training and testing sets created and saved.")
     return X_train_val_resampled, y_train_val_resampled, X_test, y_test
 
 
@@ -207,7 +207,7 @@ def split_and_apply_new_smote_by_source(sequences, labels, sources, output_dir="
     with open(os.path.join(output_dir, "y_test_combined.pkl"), "wb") as f:
         pickle.dump(y_test_combined, f)
     
-    print("✅ Combined training and testing sets created and saved.")
+    print(" Combined training and testing sets created and saved.")
     return X_train_val_resampled, y_train_val_resampled, X_test_combined, y_test_combined
 
 
