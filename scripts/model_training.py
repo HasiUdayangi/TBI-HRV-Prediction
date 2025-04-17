@@ -147,14 +147,14 @@ def train_and_tune_model(X_train_val_resampled, y_train_val_resampled, param_dic
                 'layers': config['layers'],
                 'auc': best_auc
             }
-            print(f"🎯 New Best Model Found! AUC: {best_auc:.4f}")
+            print(f" New Best Model Found! AUC: {best_auc:.4f}")
 
     print(f"Best Model Parameters: {best_model_params}")
     return best_model_params, model_histories
 
 
 # --------------------------
-# 🚀 Execution Pipeline
+# Execution Pipeline
 # --------------------------
 if __name__ == "__main__":
     # Load preprocessed data
